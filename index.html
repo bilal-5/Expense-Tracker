@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpenseTracker</title>
+    <link rel="stylesheet" href="style7.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+</head>
+<body>
+    <div class="table">
+        <div class="header">
+            <h1>Expense Tracker</h1>
+        </div>
+        <table id="table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Names</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="table_row">
+                    <td>
+                        <select name="select" class="Select">
+                            <!-- options will be shown here -->
+                        </select>
+                    </td>
+                    <td><input type="text" class="name" required></td>
+                    <td><input type="number" class="Unit" required></td>
+                    <td><input type="number" class="Quantity" required></td>
+                    <td><input type="text" class="Total" readonly></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="btns">
+            <div class="click_btn">
+                <button id="AddRow">Add row</button>
+                <button id="DellRow">Delete row</button>
+            </div>
+            <div class="grandtotal">
+                <label for="Grand_Total">Grand Total</label>
+                <input type="text" id="Grand_Total" readonly placeholder="Grand Total">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            function calculateTotal(){
+                let GrandTotal = 0;
+
+                $('.table_row').each(function(){
+                    const unit = $(this).find('.Unit').val() || 0;
+                    const quantity = $(this).find('.Quantity').val() || 0;
+                    const total = unit * quantity;
+                    $(this).find('.Total').val(total.toFixed(2) + ' Rs');
+                    GrandTotal += total;
+                });
+
+                $('#Grand_Total').val(GrandTotal.toFixed(2) + ' Rs');
+            }    
+
+            $('#table').on('input', '.Unit, .Quantity', calculateTotal); 
+            
+            $(".table_row").find(".name").keypress(function(e) {
+                var key = e.keyCode;
+                if (key >= 48 && key <= 57) {
+                    e.preventDefault();
+                }
+            });
+
+            const options = ['Vegetables', 'Meat', 'Fruits', 'Grocery', 'Medicines', 'tools'];
+            
+            function populateSelect(select) {
+                options.forEach(option => {
+                    select.append(`<option value="${option}">${option}</option>`);
+                });
+            }
+            
+            populateSelect($('.Select'));
+
+            $('#AddRow').click(function(){
+                const name = $('.table_row:last').find('.name').val();
+                const unit = $('.table_row:last').find('.Unit').val();
+                const quantity = $('.table_row:last').find('.Quantity').val();
+                
+                if (name === '') {
+                    alert('Please fill the required fields');
+                    $('.table_row:last').find('.name').addClass('Add_border');
+                    $(".table_row:last").find('.name').keyup(function(){
+                        const name = $('.table_row:last').find('.name').val();
+                        if(name != ''){
+                            $('.table_row:last').find('.name').removeClass('Add_border');
+                        }
+                    })
+                } else if(unit === ''){
+                    alert('Please fill the required fields');
+                    $('.table_row:last').find('.Unit').addClass('Add_border');
+                    $(".table_row:last").find('.Unit').keyup(function(){
+                        const name = $('.table_row:last').find('.Unit').val();
+                        if(name != ''){
+                            $('.table_row:last').find('.Unit').removeClass('Add_border');
+                        }
+                    })
+                } else if(quantity === ''){
+                    alert('Please fill the required fields');
+                    $('.table_row:last').find('.Quantity').addClass('Add_border');
+                    $(".table_row:last").find('.Quantity').keyup(function(){
+                        const name = $('.table_row:last').find('.Quantity').val();
+                        if(name != ''){
+                            $('.table_row:last').find('.Quantity').removeClass('Add_border');
+                        }
+                    })
+                } else{
+                    
+                    const newRow = $(`<tr class="table_row">
+                        <td>
+                            <select name="select" class="Select">
+                                <!-- options will be shown here -->
+                            </select>
+                        </td>
+                        <td><input type="text" class="name" required></td>
+                        <td><input type="number" class="Unit" required></td>
+                        <td><input type="number" class="Quantity" required></td>
+                        <td><input type="text" class="Total" readonly></td>
+                    </tr>`);
+                    
+                    populateSelect(newRow.find('.Select'));
+                    
+                    $('#table tbody').append(newRow);
+
+                    $('.table_row').find('select').focus();
+                }
+            });
+
+            $('#DellRow').click(function(){
+                const name = $('.table_row:last').find('.name').val();
+                const unit = $('.table_row:last').find('.Unit').val();
+                const quantity = $('.table_row:last').find('.Quantity').val();
+
+                if(name !== '' && unit !== '' && quantity !== '') {
+                    alert('You cannot delete this row');
+                } else {
+                    const table =  $(".table_row")
+                    if (table.length > 1){
+                        $(".table_row:last").remove();
+                    } else {
+                        alert ('you cannot delete this row')
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
